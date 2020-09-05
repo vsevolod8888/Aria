@@ -202,19 +202,9 @@ public class PlayActivity extends AppCompatActivity {
         } else {
             wrongAnswer();
         }
-
-
     }
 
     private void rightAnswer() {
-//        String sec = tvTimer.getText().toString();
-//        //    int seco = Integer.parseInt(sec);
-//        String[] parts = sec.split(":");
-//        String part1 = parts[0]; // 004
-//        String part2 = parts[1]; // 034556
-//        int t = Integer.parseInt(part2);
-//        timeToThink = timeToThink + t;//timeToThink это int
-//        tvCountAllSeconds.setText(String.valueOf(timeToThink));
         stopTimer();
         stopTimer2();
         level++;
@@ -528,7 +518,7 @@ public class PlayActivity extends AppCompatActivity {
                 @Override
                 public void onCompletion(MediaPlayer mp) {
                     stopPlayer();
-                    if (!wronganswer) {
+                    if (wronganswer==false) {//при неправильном ответе мы не делаем плей VISIBLE
                         doPlayVisible();
                         wronganswer = false;
                     }
@@ -543,6 +533,7 @@ public class PlayActivity extends AppCompatActivity {
             player.release();//вместо того, чтобы держать наш экземпляр медиаплеера, мы его освобождаем(release)
             player = null;   //и создаём новый, когда нажимаем play
         }
+        doPlayVisible();
     }
 
     protected void onStop() {  //когда покидаем приложение, тоже выполняется stopPlayer()
@@ -568,8 +559,9 @@ public class PlayActivity extends AppCompatActivity {
     }
 
     private void startTimer(final long mTimeLeftInMillis) {
-        if (mCountDownTimer != null) {                        //если таймер уже существует
-            return;                                        //то новый не создавать
+        if (mCountDownTimer != null) {
+           return;                 //return передаёт управление объекту, который вызвал данный метод
+           // mCountDownTimer.cancel();                                        //то новый не создавать
         }
         mCountDownTimer = new CountDownTimer(mTimeLeftInMillis, 1000) {
             @Override
@@ -587,25 +579,25 @@ public class PlayActivity extends AppCompatActivity {
     }
 
     private void startTimer2() {
-        //   if (mCountDownTimer2 != null) {                        //если таймер уже существует
-        //       return;                                        //то новый не создавать
-        //   }
-        mCountDownTimer2 = new CountDownTimer(mTimeLeftInMillis, 1000) {
+          if(mCountDownTimer2!=null) {
+              mCountDownTimer2.cancel();
+          }                      //если таймер уже существует
+                  mCountDownTimer2 = new CountDownTimer(mTimeLeftInMillis, 1000) {
 
-            @Override
-            public void onTick(long millisUntilFinished) {
-                mTimeLeftInMillis = millisUntilFinished;
-                long ggg = START_TIME_IN_MILLIS - millisUntilFinished;
-                ;                                                     //????
-                updateOurCountDownText2(ggg); //передаём 1
+                      @Override
+                      public void onTick(long millisUntilFinished) {
+                          mTimeLeftInMillis = millisUntilFinished;
+                          long ggg = START_TIME_IN_MILLIS - millisUntilFinished;
+                          ;                                                     //????
+                          updateOurCountDownText2(ggg); //передаём 1
 
-            }
+                      }
 
-            @Override
-            public void onFinish() {
+                      @Override
+                      public void onFinish() {
 
-            }
-        }.start();
+                      }
+                  } .start();
     }
 
     private void updateOurCountDownText(long m) {
@@ -629,13 +621,12 @@ public class PlayActivity extends AppCompatActivity {
             mCountDownTimer = null;
         }
     }
-
     private void stopTimer2() {
         if (mCountDownTimer2 != null) {
             mCountDownTimer2.cancel();
+            mCountDownTimer2 = null;
         }
     }
-
     private void setLevelVisibility() {
         if (level == 1) {
             tvNameRedScore.setVisibility(View.INVISIBLE);
